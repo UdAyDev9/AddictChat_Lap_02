@@ -15,7 +15,7 @@
       android:layout_marginTop="16dp"
       android:text="Request Type"
       android:textStyle="bold"
-      android:textColor="#3F51B5"
+      android:textColor="#3B50C4"
       android:textSize="21sp"
       app:layout_constraintLeft_toLeftOf="parent"
       app:layout_constraintTop_toTopOf="parent" />
