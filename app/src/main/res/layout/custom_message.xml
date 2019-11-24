@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+      android:id="@+id/from_message_layout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_below="@+id/bar_layout"
+      android:layout_margin="8dp"
+      android:padding="8dp"
+      app:cardElevation="8dp"
+      android:layout_marginRight="10dp"
+      app:cardCornerRadius="9dp"
+      app:cardBackgroundColor="@color/button_color"
+      android:background="@color/button_color">
+
+        <android.support.constraint.ConstraintLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:id="@+id/from_message_layout_constr">
+
+            <TextView
+              android:id="@+id/from_message"
+              android:textStyle="bold"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentEnd="false"
+              android:padding="2dp"
+              android:cursorVisible="false"
+              android:focusable="false"
+              android:focusableInTouchMode="false"
+              android:text="iHiiHiiHiiHiiHiiHiiHiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHi"
+              android:textColor="#ffffff"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+              android:id="@+id/from_time"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginEnd="8dp"
+              android:paddingLeft="2dp"
+              android:paddingRight="2dp"
+              android:gravity="bottom"
+              android:text="12:20Pm"
+              android:textColor="#534F4F"
+              android:textSize="10sp"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintHorizontal_bias="1.0"
+              app:layout_constraintStart_toEndOf="@+id/from_message"
+              app:layout_constraintTop_toBottomOf="@id/from_message" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      android:id="@+id/to_message_layout"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_alignParentEnd="true"
+      android:layout_below="@+id/from_message_layout"
+      android:layout_margin="8dp"
+      android:padding="8dp"
+      app:cardElevation="8dp"
+      app:cardCornerRadius="9dp"
+      app:cardBackgroundColor="@color/colorAccent"
+      android:background="@color/colorAccent"
+      android:layout_marginStart="10dp"
+      >
+
+        <android.support.constraint.ConstraintLayout
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:id="@+id/to_message_layout_constr">
+
+            <TextView
+              android:id="@+id/to_messagee"
+              android:textStyle="bold"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentEnd="false"
+              android:padding="2dp"
+              android:cursorVisible="false"
+              android:focusable="false"
+              android:focusableInTouchMode="false"
+              android:text="iHiiHiiHiiHiiHiiHiiHiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHiiHi"
+              android:textColor="#ffffff"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+              android:id="@+id/to_time"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginEnd="8dp"
+              android:paddingLeft="2dp"
+              android:paddingRight="2dp"
+              android:gravity="bottom"
+              android:text="12:20Pm"
+              android:textColor="#534F4F"
+              android:textSize="10sp"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintHorizontal_bias="1.0"
+              app:layout_constraintStart_toEndOf="@+id/to_messagee"
+              app:layout_constraintTop_toBottomOf="@id/to_messagee" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+</RelativeLayout>

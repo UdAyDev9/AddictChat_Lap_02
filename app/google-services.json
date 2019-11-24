@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "59143637071",
+    "firebase_url": "https://addictchat-7ae96.firebaseio.com",
+    "project_id": "addictchat-7ae96",
+    "storage_bucket": "addictchat-7ae96.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:59143637071:android:3881cc6aba378af6",
+        "android_client_info": {
+          "package_name": "com.addictchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "59143637071-p7840fbntfv8jdo0ea7miuraoov8pmiv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBY2JrCnrtq2QMYihwBZd7KdKzbfACAwok"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

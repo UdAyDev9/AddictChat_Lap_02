@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--<color name="colorPrimary">#03A9F4</color>
+    <color name="colorPrimaryDark">#0288D1</color>
+    <color name="colorAccent">#2fa881</color>-->
+
+    <color name="colorPrimary">#3955EE</color>
+
+    <color name="colorPrimaryDark">#1E33BE</color>
+
+    <color name="colorAccent">#2fa881</color>
+
+    <color name="greenPrimary">#065E52</color>
+
+    <color name="greenPrimaryDark">#054E43</color>
+
+    <color name="greenAccent">#96BCB7</color>
+
+    <color name="colorTextPrimary">#FFFFFF</color>
+
+    <color name="colorTextDisable">#66FFFFFF</color>
+
+    <color name="bc_login">#467470</color>
+
+    <color name="blue">#0091f1</color>
+
+    <color name="blue_light">#8badfb</color>
+
+    <color name="login_color">#03A9F4</color>
+
+    <color name="light_green">#ff8bc34a</color>
+
+    <color name="deep_blue">#041e41</color>
+
+    <color name="button_color">#0186ed</color>
+
+    <color name="gray">#FF444949</color>
+
+    <color name="light_gray">#FFDBDEDD</color>
+
+    <color name="white">#ffffff</color>
+
+    <color name="black">#000000</color>
+
+    <!--<color name="colorAccent">#FF4081</color>-->
+
+    <color name="light_yellow">#d28b25</color>
+
+    <color name="login_background">#FEFEFF</color>
+
+    <color name="title_color">#F94141</color>
+
+    <color name="btn_color_gray">#a9a9a9</color>
+
+    <color name="yellow">#eac041</color>
+
+    <color name="background_color">#e6e6e6</color>
+
+</resources>
+
+

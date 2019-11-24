@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:padding="3dp"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <com.addictchat.widgets.RoundedImageView
+        android:id="@+id/rounded_iv_profile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/avtar_img"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="10dp">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:text="Bob Marley"
+            android:textSize="18sp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/tvName"
+            android:text="(626) 336-5889"
+            android:textSize="16sp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <!--<TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#575757"
+            android:layout_alignBaseline="@+id/tvPhone"
+            android:layout_alignBottom="@+id/tvPhone"
+            android:paddingLeft="5dp"
+            android:layout_toRightOf="@+id/tvPhone"
+            android:layout_alignParentRight="true"
+            android:text="bob@fake.com"
+            android:textAppearance="?android:attr/textAppearanceMedium" />-->
+
+    </LinearLayout>
+
+</LinearLayout>
