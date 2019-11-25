@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -28,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -100,7 +102,8 @@ public class MessageActivity extends AppCompatActivity {
     String[] acceptance = {"Accept", "Reject"};
     String login_unamne = null, unamne = null, uimageUrl = null;
     String req_type = null, req_status = null;
-    CardView reqcard, received_card;
+    CardView reqcard;
+    ConstraintLayout received_card;
     ArrayList<Message> msgs = new ArrayList<>();
     RecyclerView recyclerView;
     RelativeLayout main;
@@ -126,6 +129,8 @@ public class MessageActivity extends AppCompatActivity {
     private StorageReference imageStorageReference;
     private DatabaseReference userDatabase_Setting;
     private ImageButton attachImageBtn;
+    private Button acceptBtn,rejectBtn;
+    private TextView requestTypeTv;
 
 
     @Override
@@ -161,19 +166,50 @@ public class MessageActivity extends AppCompatActivity {
         btn_send = (ImageButton) findViewById(R.id.btn_send);
         request = findViewById(R.id.request);
         reqcard = findViewById(R.id.request_layout);
-        received = findViewById(R.id.received);
-        received_card = findViewById(R.id.received_layout);
+        // received = findViewById(R.id.received);
+        received_card = (ConstraintLayout) findViewById(R.id.received_layout);
         recyclerView = findViewById(R.id.recyclerView);
         main = findViewById(R.id.main_layout);
         verticalProgressBar = findViewById(R.id.vertical_progressbar);
         attachImageBtn = (ImageButton)findViewById(R.id.img_btn_attach);
+        acceptBtn = (Button)findViewById(R.id.accept_btn);
+        rejectBtn = (Button)findViewById(R.id.reject_btn);
+        requestTypeTv = (TextView)findViewById(R.id.request_type_tv);
+
+        final DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference().child(login_unamne).child("requests").child(unamne);
+        final DatabaseReference databaseReference4 = FirebaseDatabase.getInstance().getReference().child(unamne).child("requests_sent").child(login_unamne);
+
+        acceptBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                databaseReference3.child("req_status").setValue("Accept");
+                databaseReference4.child("req_status").setValue("Accept");
+
+                Toast.makeText(MessageActivity.this, "Accept!!!", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        rejectBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                databaseReference3.child("req_status").setValue("Reject");
+                databaseReference4.child("req_status").setValue("Reject");
+
+                Toast.makeText(MessageActivity.this, "Reject!!!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         recyclerView.setAdapter(new CustomMessageAdapter(this, msgs));
         attachImageBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 CropImage.activity()
-                    .setGuidelines(CropImageView.Guidelines.ON)
-                    .start(MessageActivity.this);
+                        .setGuidelines(CropImageView.Guidelines.ON)
+                        .start(MessageActivity.this);
             }
         });
         FirebaseUser currentFirebaseUser = FirebaseAuth.getInstance().getCurrentUser() ;
@@ -196,7 +232,7 @@ public class MessageActivity extends AppCompatActivity {
 
         chatBackground();
         DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference()
-            .child(login_unamne).child("requests_sent").child(unamne);
+                .child(login_unamne).child("requests_sent").child(unamne);
         databaseReference2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -213,8 +249,8 @@ public class MessageActivity extends AppCompatActivity {
 
                 //Toast.makeText(MessageActivity.this, req_type, Toast.LENGTH_SHORT).show();
                 request.setAdapter(
-                    new AutoCompleteAdapter(MessageActivity.this, reuests, unamne, login_unamne,
-                        req_type, req_status, request));
+                        new AutoCompleteAdapter(MessageActivity.this, reuests, unamne, login_unamne,
+                                req_type, req_status, request));
 
             }
 
@@ -224,7 +260,9 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-            .child(login_unamne).child("requests_sent").child(unamne);
+                .child(login_unamne).child("requests_sent").child(unamne);
+
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -263,7 +301,7 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         FirebaseDatabase.getInstance().getReference().child(login_unamne).child("chats")
-            .child(unamne).addValueEventListener(new ValueEventListener() {
+                .child(unamne).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
@@ -277,15 +315,18 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
         FirebaseDatabase.getInstance().getReference().child(login_unamne).child("requests")
-            .child(unamne).addValueEventListener(new ValueEventListener() {
+                .child(unamne).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                if (String.valueOf(dataSnapshot.child("req_status").getValue()).equals("pending")) {
-                    received.setText(String.valueOf(dataSnapshot.child("req_type").getValue()));
+                if (String.valueOf(dataSnapshot.child("req_status").getValue()).equals("pending") || String.valueOf(dataSnapshot.child("req_status").getValue()).equals("Reject")) {
+                    //received.setText(String.valueOf(dataSnapshot.child("req_type").getValue()));
+                    requestTypeTv.setText(new StringBuilder("Request Type :  ").append(String.valueOf(dataSnapshot.child("req_type").getValue())));
+
                     received_card.setVisibility(View.VISIBLE);
                     reqcard.setVisibility(View.GONE);
-                    received.setAdapter(
+
+                    /*received.setAdapter(
                         new AutoCompleteAdapter2(MessageActivity.this, acceptance, unamne,
                             login_unamne, chatenabled, received));
                     received.setOnClickListener(new View.OnClickListener() {
@@ -295,9 +336,10 @@ public class MessageActivity extends AppCompatActivity {
                                 received.showDropDown();
                             }
                         }
-                    });
+                    });*/
+
                 } else if (String.valueOf(dataSnapshot.child("req_status").getValue())
-                    .equals("Accept")) {
+                        .equals("Accept")) {
                     received_card.setVisibility(View.GONE);
                     verticalProgressBar.setVisibility(View.VISIBLE);
                     reqcard.setVisibility(View.GONE);
@@ -316,7 +358,7 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         FirebaseDatabase.getInstance().getReference().child(login_unamne).child("chat")
-            .child(unamne).addValueEventListener(new ValueEventListener() {
+                .child(unamne).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 msgs.clear();
@@ -340,8 +382,8 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         request.setAdapter(
-            new AutoCompleteAdapter(MessageActivity.this, reuests, unamne, login_unamne, req_type,
-                req_status, request));
+                new AutoCompleteAdapter(MessageActivity.this, reuests, unamne, login_unamne, req_type,
+                        req_status, request));
 
         request.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -396,7 +438,7 @@ public class MessageActivity extends AppCompatActivity {
         txtUserName.setText(userName);
 
         Picasso.with(MessageActivity.this).load(uimageUrl).placeholder(R.drawable.avtar_img)
-            .into(profile_image);
+                .into(profile_image);
 
         btn_send.setOnClickListener(new View.OnClickListener() {
 
@@ -408,7 +450,7 @@ public class MessageActivity extends AppCompatActivity {
                     sendMsg(msg);
                 } else {
                     Toast.makeText(MessageActivity.this, "You can't send empty message",
-                        Toast.LENGTH_SHORT).show();
+                            Toast.LENGTH_SHORT).show();
                 }
                 text_send.setText("");
             }
@@ -416,20 +458,14 @@ public class MessageActivity extends AppCompatActivity {
 
         /*mAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userName);
-
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 *//*String name = dataSnapshot.child("user_name").getValue().toString();
-
                 txtUserName.setText(name);*//*
-
-
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });*/
     }
@@ -452,7 +488,7 @@ public class MessageActivity extends AppCompatActivity {
     private void sendMsg(String msg) {
         if (!chatenabled) {
             Toast.makeText(MessageActivity.this, "You are not friends to chat", Toast.LENGTH_SHORT)
-                .show();
+                    .show();
             return;
         }
 
@@ -460,12 +496,12 @@ public class MessageActivity extends AppCompatActivity {
         String time2 = new SimpleDateFormat("hh:mmaa").format(new Date());
         String timeimmilli = String.valueOf(new Date().getTime());
         databaseReference = FirebaseDatabase.getInstance().getReference().child(login_unamne)
-            .child("chat").child(unamne).child(timeimmilli);
+                .child("chat").child(unamne).child(timeimmilli);
         databaseReference.child("from").setValue(true);
         databaseReference.child("time").setValue(time);
         databaseReference.child("msg").setValue(msg);
         databaseReference = FirebaseDatabase.getInstance().getReference().child(unamne)
-            .child("chat").child(login_unamne).child(timeimmilli);
+                .child("chat").child(login_unamne).child(timeimmilli);
         databaseReference.child("from").setValue(false);
         databaseReference.child("time").setValue(time);
         databaseReference.child("msg").setValue(msg);
@@ -490,20 +526,20 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendNotification(JSONObject notification) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(FCM_API, notification,
-            new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    Log.i(TAG, "onResponse: " + response.toString());
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.i(TAG, "onResponse: " + response.toString());
 
-                }
-            },
-            new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(MessageActivity.this, "Request error", Toast.LENGTH_LONG).show();
-                    Log.i(TAG, "onErrorResponse: Didn't work");
-                }
-            }) {
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MessageActivity.this, "Request error", Toast.LENGTH_LONG).show();
+                        Log.i(TAG, "onErrorResponse: Didn't work");
+                    }
+                }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
@@ -547,13 +583,13 @@ public class MessageActivity extends AppCompatActivity {
         if (id == R.id.wallpaper) {
 
             // Do something
-          //  Toast.makeText(this, "Wallpaper", Toast.LENGTH_SHORT).show();
-          //   main.setBackground(getResources().getDrawable(R.drawable.waves));
+            //  Toast.makeText(this, "Wallpaper", Toast.LENGTH_SHORT).show();
+            //   main.setBackground(getResources().getDrawable(R.drawable.waves));
             CropImage.activity()
-                .setGuidelines(CropImageView.Guidelines.ON)
-                .start(MessageActivity.this);
+                    .setGuidelines(CropImageView.Guidelines.ON)
+                    .start(MessageActivity.this);
 
-          //chatBackground();
+            //chatBackground();
             return true;
         }
 
@@ -570,7 +606,6 @@ public class MessageActivity extends AppCompatActivity {
             CropImage.activity(imgUri)
                     .setAspectRatio(1,1)
                     .start(this);
-
             //Toast.makeText(SettingsActivity.this,imgUri,Toast.LENGTH_LONG).show();
         }*/
         /*if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
@@ -582,8 +617,6 @@ public class MessageActivity extends AppCompatActivity {
                 // bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), resultUri);
                 Drawable d = Drawable.createFromPath(f.getAbsolutePath());
                 main.setBackground(d);
-
-
             }
         }*/
 
@@ -604,10 +637,10 @@ public class MessageActivity extends AppCompatActivity {
                 Bitmap thumb_bitmap = null;
                 try {
                     thumb_bitmap = new Compressor(this)
-                        .setMaxWidth(200)
-                        .setMaxHeight(200)
-                        .setQuality(75)
-                        .compressToBitmap(thumb_filePath);
+                            .setMaxWidth(200)
+                            .setMaxHeight(200)
+                            .setQuality(75)
+                            .compressToBitmap(thumb_filePath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -688,7 +721,6 @@ public class MessageActivity extends AppCompatActivity {
             if (!task.isSuccessful()) {
               throw task.getException();
             }
-
             // Continue with the task to get the download URL
             return filePath.getDownloadUrl();
           }
@@ -735,7 +767,7 @@ public class MessageActivity extends AppCompatActivity {
 
                 String displayImageStr = " ";
 
-                if(!displayImageStr.equals(" ")){
+                if(!displayImageStr.equals("")){
                     displayImageStr=dataSnapshot.child("chat_wallpaper").getValue().toString();
 
                 }
@@ -760,15 +792,12 @@ public class MessageActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         progressDialog.dismiss();
-
                     }
-
                     @Override
                     public void onError() {
                         Picasso.with(ProfileActivity.this).load(displayImageStr)
                             .placeholder(R.drawable.avtar_img).into(displayProfileImg);
                         progressDialog.dismiss();
-
                     }
                 });*/
             }
