@@ -32,6 +32,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RelativeLayout;
@@ -65,12 +66,14 @@ import com.google.firebase.storage.UploadTask.TaskSnapshot;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 import id.zelory.compressor.Compressor;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -233,7 +236,7 @@ public class MessageActivity extends AppCompatActivity {
         }
         userDatabase= FirebaseDatabase.getInstance().getReference().child("Users").child(current_Uid);
         userDatabase.keepSynced(true);
-
+        chatBackground();
         imageStorageReference= FirebaseStorage.getInstance().getReference();
 
         chatBackground();
@@ -771,25 +774,36 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                String displayImageStr = " ";
-
-                if(!displayImageStr.equals("")){
-                    displayImageStr=dataSnapshot.child("chat_wallpaper").getValue().toString();
-
-                }
-
-                Log.d("chat_bg", "onDataChange: "+displayImageStr);
-
                 try {
-                    URL url = new URL(displayImageStr);
-                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    Drawable image = new BitmapDrawable(getResources(), bitmap);
+                    String displayImageStr = "";
 
-                    main.setBackgroundDrawable(image);
 
+                        displayImageStr=dataSnapshot.child("chat_wallpaper").getValue().toString();
+                    Picasso.with(MessageActivity.this).load(displayImageStr).into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            main.setBackground(new BitmapDrawable(bitmap));
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
                 } catch (Exception e) {
+
                     e.printStackTrace();
-                }
+                }}
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
 
 
 
@@ -806,12 +820,6 @@ public class MessageActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                     }
                 });*/
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
         });
     }
 }
