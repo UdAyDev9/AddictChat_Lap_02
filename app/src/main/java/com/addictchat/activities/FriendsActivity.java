@@ -40,6 +40,7 @@ public class FriendsActivity extends AppCompatActivity {
     private ImageView onlineSymbol;
 
     SharedPreferences sp;
+
     private String myUserNo = " ";
 
 
