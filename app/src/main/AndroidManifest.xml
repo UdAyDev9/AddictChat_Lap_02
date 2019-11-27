@@ -32,24 +32,22 @@
             android:name=".activities.ProfileActivity"
             android:parentActivityName=".activities.DashboardActivity"></activity>
         <activity android:name=".activities.SplashActivity">
-            <intent-filter>
+          <!--  <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
         <activity android:name=".activities.LoginActivity">
 
-            <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            -->
+
         </activity>
 
-        <activity android:name=".activities.FriendsActivity"></activity>
 
         <activity
             android:name=".activities.DashboardActivity"

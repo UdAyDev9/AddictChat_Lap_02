@@ -64,7 +64,7 @@ public class FriendsActivity extends AppCompatActivity {
           .getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
     }*/
 
-        databaseReference= FirebaseDatabase.getInstance().getReference().child("Friends").child(myUserNo);
+        databaseReference= FirebaseDatabase.getInstance().getReference().child("Friends");
         databaseReference.keepSynced(true);
         recyclerView =(RecyclerView)findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
@@ -104,8 +104,8 @@ public class FriendsActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position,
                                             @NonNull final Users model) {
 
-                holder.userName.setText(model.getUser_name());
-                //  holder.userStatus.setText(model.getUser_status());
+                holder.userName.setText(model.getUser_phone());
+                  holder.userStatus.setText(model.getUser_status());
 
      /*   Picasso.with(FriendsActivity.this).load(model.getUser_image()).networkPolicy(
             NetworkPolicy.OFFLINE)
@@ -115,9 +115,9 @@ public class FriendsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(FriendsActivity.this, MessageActivity.class);
-                        //intent.putExtra("userName", model.getUser_name());
+                        intent.putExtra("userName", model.getUser_name());
                         intent.putExtra("login_unamne",model.getUser_phone());
-                        //    intent.putExtra("userImage",model.getUser_image());
+                        intent.putExtra("userImage",model.getUser_image());
                         startActivity(intent);
                     }
                 });

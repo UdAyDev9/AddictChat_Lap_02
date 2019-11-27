@@ -126,7 +126,7 @@ public class MessageActivity extends AppCompatActivity {
     private DatabaseReference userDatabase;
     private FirebaseUser currentUser;
     private StorageReference imageStorageReference;
-    private DatabaseReference userDatabase_Setting;
+    private DatabaseReference userDatabase_Setting,friendsDatabase;
     private ImageButton attachImageBtn;
     private Button acceptBtn,rejectBtn;
     private TextView requestTypeTv;
@@ -174,6 +174,8 @@ public class MessageActivity extends AppCompatActivity {
         acceptBtn = (Button)findViewById(R.id.accept_btn);
         rejectBtn = (Button)findViewById(R.id.reject_btn);
         requestTypeTv = (TextView)findViewById(R.id.request_type_tv);
+        mAuth = FirebaseAuth.getInstance();
+
 
         final DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference().child(login_unamne).child("requests").child(unamne);
         final DatabaseReference databaseReference4 = FirebaseDatabase.getInstance().getReference().child(unamne).child("requests_sent").child(login_unamne);
@@ -181,14 +183,19 @@ public class MessageActivity extends AppCompatActivity {
         acceptBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 databaseReference3.child("req_status").setValue("Accept");
                 databaseReference4.child("req_status").setValue("Accept");
+                friendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(mAuth.getCurrentUser().getUid());
+                friendsDatabase.child("user_phone").setValue(unamne);
 
+                /*friendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(login_unamne);
+                friendsDatabase.child("user_phone").setValue(unamne);
+*/
                 Toast.makeText(MessageActivity.this, "Accept!!!", Toast.LENGTH_SHORT).show();
 
             }
         });
+
 
         rejectBtn.setOnClickListener(new OnClickListener() {
             @Override
