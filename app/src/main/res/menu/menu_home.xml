@@ -5,14 +5,23 @@
         android:icon="@mipmap/ic_search"
         android:title="@string/action_search"
         app:showAsAction="always"/>
-    <item android:id="@+id/action_status"
-        android:orderInCategory="10"
-        android:title="@string/action_status"
-        app:showAsAction="never"/>
+
     <item android:id="@+id/action_settings"
-        android:orderInCategory="11"
+        android:orderInCategory="10"
         android:title="@string/action_settings"
         app:showAsAction="never"/>
+
+    <item android:id="@+id/action_friends"
+        android:orderInCategory="11"
+        android:title="@string/action_friends"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_logout"
+        android:orderInCategory="12"
+        android:title="@string/action_logout"
+        app:showAsAction="never"/>
+
+
     <!--<item android:id="@+id/action_with_icon"
         android:orderInCategory="12"
         android:title="@string/action_with_icon"

@@ -10,15 +10,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.addictchat.R;
 import com.addictchat.adapters.ViewPagerAdapter;
 import com.addictchat.fragments.CallsFragment;
 import com.addictchat.fragments.ChatFragment;
-import com.addictchat.fragments.ContactsFragment;
 import com.addictchat.fragments.RequestsFragment;
 import com.addictchat.fragments.StatusFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -45,15 +44,12 @@ public class DashboardActivity extends AppCompatActivity {
         setContentView(R.layout.activity_dashboard);
 
        /* Button btnLogout = (Button) findViewById(R.id.buttonLogout);
-
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
-
                 Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
                 startActivity(intent);
             }
         });*/
@@ -66,11 +62,11 @@ public class DashboardActivity extends AppCompatActivity {
                 //Toast.makeText(DashboardActivity.this, "ContactsActivity", Toast.LENGTH_SHORT).show();
                 //getSupportFragmentManager().beginTransaction().replace(R.id.content_main, new ContactsActivity(), "ContactsActivity").addToBackStack(null).commit();
 
-             //   Intent intent = new Intent(DashboardActivity.this, ContactsActivity.class);
-             // startActivity(intent);
+                //   Intent intent = new Intent(DashboardActivity.this, ContactsActivity.class);
+                // startActivity(intent);
 
-             Intent intent = new Intent(DashboardActivity.this, UsersActivity.class);
-             startActivity(intent);
+                Intent intent = new Intent(DashboardActivity.this, UsersActivity.class);
+                startActivity(intent);
 
                 //getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout, new ContactsFragment()).addToBackStack(null).commit();
             }
@@ -123,15 +119,26 @@ public class DashboardActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.action_status:
-                Toast.makeText(this, "Home Status Click", Toast.LENGTH_SHORT).show();
+            case R.id.action_logout:
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(DashboardActivity.this,LoginActivity.class));
+                finish();
+                //Toast.makeText(this, "Home Status Click", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.action_settings:
                 //Toast.makeText(this, "Home Settings Click", Toast.LENGTH_SHORT).show();
 
                 startActivity(new Intent(DashboardActivity.this,ProfileActivity.class));
-              return true;
-              /*case R.id.action_with_icon:
+                return true;
+
+            case R.id.action_friends:
+                //Toast.makeText(this, "Home Settings Click", Toast.LENGTH_SHORT).show();
+
+                startActivity(new Intent(DashboardActivity.this, FriendsActivity.class));
+                return true;
+
+
+            /*case R.id.action_with_icon:
              *//*Intent withicon=new Intent(this,TabWithIconActivity.class);
                 startActivity(withicon);
                 finish();*//*

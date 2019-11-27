@@ -37,7 +37,6 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.addictchat.FirebaseMsging.MySingleTonClass;
 import com.addictchat.R;
 import com.addictchat.adapters.AutoCompleteAdapter;
