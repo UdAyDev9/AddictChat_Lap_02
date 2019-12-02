@@ -129,7 +129,7 @@ public class MessageActivity extends AppCompatActivity {
     private DatabaseReference userDatabase;
     private FirebaseUser currentUser;
     private StorageReference imageStorageReference;
-    private DatabaseReference userDatabase_Setting,friendsDatabase;
+    private DatabaseReference userDatabase_Setting,friendsDatabase,baseUserDatabaseRef;
     private ImageButton attachImageBtn;
     private Button acceptBtn,rejectBtn;
     private TextView requestTypeTv;
@@ -152,6 +152,7 @@ public class MessageActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
+        getSupportActionBar().setSubtitle("Hello");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,8 +179,19 @@ public class MessageActivity extends AppCompatActivity {
         rejectBtn = (Button)findViewById(R.id.reject_btn);
         requestTypeTv = (TextView)findViewById(R.id.request_type_tv);
         mAuth = FirebaseAuth.getInstance();
+        baseUserDatabaseRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid()).child("online");
+        baseUserDatabaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.i("val", dataSnapshot.getValue(String.class));
 
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         final DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference().child(login_unamne).child("requests").child(unamne);
         final DatabaseReference databaseReference4 = FirebaseDatabase.getInstance().getReference().child(unamne).child("requests_sent").child(login_unamne);
 
@@ -198,7 +210,6 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
-
 
         rejectBtn.setOnClickListener(new OnClickListener() {
             @Override

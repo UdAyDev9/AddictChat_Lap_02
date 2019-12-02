@@ -18,6 +18,8 @@ import com.addictchat.fragments.ChatFragment;
 import com.addictchat.fragments.RequestsFragment;
 import com.addictchat.fragments.StatusFragment;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class DashboardActivity extends AppCompatActivity {
 
@@ -36,7 +38,10 @@ public class DashboardActivity extends AppCompatActivity {
     String[] tabTitle={"REQUESTS","CHAT","STATUS","CALLS"};
     int[] unreadCount={0,0,0};
 
+    private DatabaseReference databaseReference;
+    private  FirebaseAuth mAuth;
     private FloatingActionButton fab;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +58,9 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });*/
-
-
+        mAuth = FirebaseAuth.getInstance();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
+        databaseReference.child("online").setValue("yes");
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,4 +198,39 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        databaseReference.child("online").setValue("yes");
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        databaseReference.child("online").setValue("no");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        databaseReference.child("online").setValue("no");
+    }
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        databaseReference.child("online").setValue("yes");
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        databaseReference.child("online").setValue("yes");
+    }
 }
