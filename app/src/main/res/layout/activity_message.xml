@@ -14,13 +14,13 @@
         android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/toolbar_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top|center"
             android:background="@color/blue"
-            app:titleTextColor="@android:color/white"
-            app:theme="@style/ToolbarTheme">
+            android:gravity="top|center"
+            app:theme="@style/ToolbarTheme"
+            app:titleTextColor="@android:color/white">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_image"
@@ -34,12 +34,11 @@
                 android:id="@+id/tv_user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:text="UserName"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
-                android:layout_marginStart="25dp"
-                android:textStyle="bold"
-                android:text="UserName"/>
-
+                android:textStyle="bold" />
 
 
         </android.support.v7.widget.Toolbar>

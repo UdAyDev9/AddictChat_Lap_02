@@ -156,8 +156,6 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
         final String displayImageStr=dataSnapshot.child("user_image").getValue().toString();
 
 
-
-
         displayName.setText(displayNameStr);
         displayPhone.setText(displayPhoneStr);
         statusTv.setText(displayStatusStr);

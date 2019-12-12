@@ -1,5 +1,4 @@
 package com.addictchat.activities;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -15,6 +14,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -85,8 +85,10 @@ import java.util.Map;
 import org.json.JSONObject;
 
 public class MessageActivity extends AppCompatActivity {
-
+    private DatabaseReference UserRef, ChatRequestRef, ContactsRef, NotificationRef;
     private String currentState;
+    private String receiverUserID, senderUserID, Current_State;
+
 
     private CircleImageView profile_image;
     private TextView txtUserName;
@@ -149,9 +151,18 @@ public class MessageActivity extends AppCompatActivity {
 
         currentState = "not_friends";
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        mAuth = FirebaseAuth.getInstance();
+        UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
+    //    NotificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
+        receiverUserID = unamne;
+        senderUserID = myUserNo;
+
+
+        Toolbar toolbar = findViewById(R.id.toolbar_message);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle("rgg");
         getSupportActionBar().setSubtitle("Hello");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -160,7 +171,6 @@ public class MessageActivity extends AppCompatActivity {
                 finish();
             }
         });
-
 
 
         profile_image = (CircleImageView) findViewById(R.id.profile_image);
@@ -179,11 +189,11 @@ public class MessageActivity extends AppCompatActivity {
         rejectBtn = (Button)findViewById(R.id.reject_btn);
         requestTypeTv = (TextView)findViewById(R.id.request_type_tv);
         mAuth = FirebaseAuth.getInstance();
-        baseUserDatabaseRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid()).child("online");
+        /*baseUserDatabaseRef = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid()).child("online");
         baseUserDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.i("val", dataSnapshot.getValue(String.class));
+                Log.i("val_online", dataSnapshot.getValue(String.class));
 
             }
 
@@ -191,7 +201,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        });*/
         final DatabaseReference databaseReference3 = FirebaseDatabase.getInstance().getReference().child(login_unamne).child("requests").child(unamne);
         final DatabaseReference databaseReference4 = FirebaseDatabase.getInstance().getReference().child(unamne).child("requests_sent").child(login_unamne);
 
@@ -200,14 +210,15 @@ public class MessageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 databaseReference3.child("req_status").setValue("Accept");
                 databaseReference4.child("req_status").setValue("Accept");
-                friendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(mAuth.getCurrentUser().getUid());
-                friendsDatabase.child("user_phone").setValue(unamne);
+                //friendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(mAuth.getCurrentUser().getUid());
+                //friendsDatabase.child("user_phone").setValue(unamne);
 
-                /*friendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(login_unamne);
-                friendsDatabase.child("user_phone").setValue(unamne);
-*/
+                //friendsDatabase = FirebaseDatabase.getInstance().getReference().child("Friends").child(login_unamne);
+                //friendsDatabase.child("user_phone").setValue(unamne);
+
                 Toast.makeText(MessageActivity.this, "Accept!!!", Toast.LENGTH_SHORT).show();
 
+                acceptChatRequest();
             }
         });
 
@@ -260,6 +271,7 @@ public class MessageActivity extends AppCompatActivity {
                 req_type = String.valueOf(dataSnapshot.child("req_type").getValue());
                 req_status = String.valueOf(dataSnapshot.child("req_status").getValue());
                 if (req_status.equals("Accept")) {
+                    //acceptChatRequest();
                     received_card.setVisibility(View.GONE);
                     verticalProgressBar.setVisibility(View.VISIBLE);
                     reqcard.setVisibility(View.GONE);
@@ -833,4 +845,57 @@ public class MessageActivity extends AppCompatActivity {
                 });*/
         });
     }
+
+    private void acceptChatRequest()
+    {
+        ContactsRef.child(senderUserID).child(receiverUserID)
+                .child("Contacts").setValue("Saved")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+                            ContactsRef.child(receiverUserID).child(senderUserID)
+                                    .child("Contacts").setValue("Saved")
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task)
+                                        {
+                                            if (task.isSuccessful())
+                                            {
+                                                ChatRequestRef.child(senderUserID).child(receiverUserID)
+                                                        .removeValue()
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task)
+                                                            {
+                                                                if (task.isSuccessful())
+                                                                {
+                                                                    ChatRequestRef.child(receiverUserID).child(senderUserID)
+                                                                            .removeValue()
+                                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                @Override
+                                                                                public void onComplete(@NonNull Task<Void> task)
+                                                                                {
+                                                                                    //SendMessageRequestButton.setEnabled(true);
+                                                                                    Current_State = "friends";
+                                                                                    //SendMessageRequestButton.setText("Remove this Contact");
+
+                                                                                    //DeclineMessageRequestButton.setVisibility(View.INVISIBLE);
+                                                                                   //DeclineMessageRequestButton.setEnabled(false);
+                                                                                }
+                                                                            });
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
+    }
+
+
 }
