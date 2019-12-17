@@ -90,13 +90,14 @@ public class VerifyPhoneActivity extends AppCompatActivity {
                         databaseReference.child("user_name").setValue(phonenumber);
                         databaseReference.child("user_phone").setValue(phonenumber);
                         databaseReference.child("user_status").setValue("Hey there, I am using Addict Chat App");
-                        databaseReference.child("user_image").setValue("default");
-                        databaseReference.child("user_thumb_image").setValue("default");
-                        databaseReference.child("user_online_status").setValue("default");
+                        databaseReference.child("user_image").setValue("default_image");
+                        databaseReference.child("user_thumb_image").setValue("default_image");
+                        databaseReference.child("user_online_status").setValue("no");
 
                         SharedPreferences sp = getSharedPreferences("user_phone_no", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putString("user_phone_no", phonenumber);
+                        editor.putString("user_id", currentUserId);
                         editor.commit();
 
                         Intent intent = new Intent(VerifyPhoneActivity.this, DashboardActivity.class);

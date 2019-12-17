@@ -6,6 +6,29 @@ public class Users {
   private String user_phone;
   private String user_status;
   private String user_image;
+  private String user_online_status;
+  private String user_id;
+
+
+
+  public Users(String user_name, String user_phone, String user_status, String user_image,
+      String user_online_status, String user_id) {
+    this.user_name = user_name;
+    this.user_phone = user_phone;
+    this.user_status = user_status;
+    this.user_image = user_image;
+    this.user_online_status = user_online_status;
+    this.user_id = user_id;
+  }
+
+  public Users(String user_name, String user_phone, String user_status, String user_image,
+      String user_online_status) {
+    this.user_name = user_name;
+    this.user_phone = user_phone;
+    this.user_status = user_status;
+    this.user_image = user_image;
+    this.user_online_status = user_online_status;
+  }
 
   public Users(String user_name, String user_phone, String user_status, String user_image) {
     this.user_name = user_name;
@@ -15,6 +38,14 @@ public class Users {
   }
 
   public Users() {
+  }
+
+  public String getUser_online_status() {
+    return user_online_status;
+  }
+
+  public void setUser_online_status(String user_online_status) {
+    this.user_online_status = user_online_status;
   }
 
   public String getUser_name() {
@@ -47,5 +78,13 @@ public class Users {
 
   public void setUser_image(String user_image) {
     this.user_image = user_image;
+  }
+
+  public String getUser_id() {
+    return user_id;
+  }
+
+  public void setUser_id(String user_id) {
+    this.user_id = user_id;
   }
 }

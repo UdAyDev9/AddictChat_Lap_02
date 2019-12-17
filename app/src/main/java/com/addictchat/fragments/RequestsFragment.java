@@ -162,7 +162,8 @@ public class RequestsFragment extends Fragment {
             Intent intent = new Intent(getContext(), MessageActivity.class);
             intent.putExtra("userName", model.getUname());
             intent.putExtra("login_unamne",model.getUname());
-            intent.putExtra("userImage",model.getUname());
+            intent.putExtra("userImage",model.getImg());
+            intent.putExtra("user_ID",model.getUserId());
             startActivity(intent);
           }
         });

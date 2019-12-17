@@ -59,6 +59,8 @@ public class UsersActivity extends AppCompatActivity {
             userRef = FirebaseDatabase
                 .getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
 
+
+            //ii
         }
 
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Users");
@@ -114,6 +116,7 @@ public class UsersActivity extends AppCompatActivity {
                         intent.putExtra("userName", model.getUser_name());
                         intent.putExtra("login_unamne",model.getUser_phone());
                         intent.putExtra("userImage",model.getUser_image());
+                        intent.putExtra("user_ID",model.getUser_id());
                         startActivity(intent);
                     }
                 });
@@ -131,6 +134,7 @@ public class UsersActivity extends AppCompatActivity {
 
 
         firebaseRecyclerAdapter.startListening();
+
         recyclerView.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.notifyDataSetChanged();
         FirebaseUser currentUser= FirebaseAuth.getInstance().getCurrentUser();

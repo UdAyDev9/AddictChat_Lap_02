@@ -40,7 +40,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
     ArrayList<String> request_types=new ArrayList<>();
     Context context;
     RadioButton previous_Selected=null;
-    String uname, login_unamne,req_type,req_status;
+    String uname, login_unamne,req_type,req_status,uimg,uid,login_uid;
     AutoCompleteTextView autoCompleteTextView;
 
     final private String FCM_API = "https://fcm.googleapis.com/fcm/send";
@@ -52,7 +52,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
     String NOTIFICATION_MESSAGE = "Request";
     String TOPIC;
 
-    public AutoCompleteAdapter(MessageActivity messageActivity, String[] reuests, String userName, String login_unanme, String req_type, String req_status, AutoCompleteTextView autoCompleteTextView) {
+    public AutoCompleteAdapter(MessageActivity messageActivity, String[] reuests, String userName, String login_unanme, String req_type, String req_status, AutoCompleteTextView autoCompleteTextView,String uimg,String uid,String login_uid) {
         request_types.addAll(Arrays.asList(reuests));
         context=messageActivity;
         uname=userName;
@@ -60,6 +60,9 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
         this.req_type=req_type;
         this.req_status=req_status;
         this.autoCompleteTextView=autoCompleteTextView;
+        this.uimg = uimg;
+        this.uid = uid;
+        this.login_uid = login_uid;
     }
 
     @Override
@@ -140,11 +143,16 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
                 databaseReference.child("time").setValue(time);
                 databaseReference.child("req_type").setValue(radioButton.getText().toString());
                 databaseReference.child("req_status").setValue("pending");
+                databaseReference.child("uimg").setValue(uimg);
+                databaseReference.child("userId").setValue(login_uid);
                 DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference().child(login_unamne).child("requests_sent").child(uname);
                 databaseReference2.child("uname").setValue(uname);
                 databaseReference2.child("time").setValue(time);
                 databaseReference2.child("req_type").setValue(radioButton.getText().toString());
                 databaseReference2.child("req_status").setValue("pending");
+                databaseReference2.child("uimg").setValue(uimg);
+                databaseReference2.child("userId").setValue(uid);
+
             }
         });
         return view;

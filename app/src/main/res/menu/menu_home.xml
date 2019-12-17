@@ -12,14 +12,14 @@
         app:showAsAction="never"/>
 
     <item android:id="@+id/action_friends"
-        android:orderInCategory="11"
-        android:title="@string/action_friends"
-        app:showAsAction="never"/>
+      android:orderInCategory="11"
+      android:title="@string/action_friends"
+      app:showAsAction="never"/>
 
     <item android:id="@+id/action_logout"
-        android:orderInCategory="12"
-        android:title="@string/action_logout"
-        app:showAsAction="never"/>
+      android:orderInCategory="12"
+      android:title="@string/action_logout"
+      app:showAsAction="never"/>
 
 
     <!--<item android:id="@+id/action_with_icon"

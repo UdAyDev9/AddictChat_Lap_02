@@ -20,10 +20,6 @@ import com.addictchat.R;
 import com.addictchat.utils.CountryData;
 import com.addictchat.utils.Utils;
 import com.google.firebase.auth.FirebaseAuth;
-/*
-import com.crashlytics.android.Crashlytics;
-import io.fabric.sdk.android.Fabric;
-*/
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,7 +33,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_login);
 
         /*spinner = (AppCompatSpinner) findViewById(R.id.spinnerCountries);

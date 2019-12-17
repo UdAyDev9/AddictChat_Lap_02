@@ -7,13 +7,32 @@
     android:layout_marginTop="3dp"
     android:layout_marginBottom="3dp">
 
+
+   <FrameLayout
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:layout_gravity="center"
+
+
+     >
     <com.addictchat.widgets.RoundedImageView
         android:id="@+id/rounded_iv_profile"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_gravity="center"
         android:layout_marginStart="10dp"
         android:src="@drawable/avtar_img"/>
+
+       <ImageView
+         android:id="@+id/online_green_iv"
+         android:layout_width="11dp"
+         android:layout_height="11dp"
+         android:layout_gravity="right|bottom"
+         android:layout_marginLeft="2dp"
+         android:src="@drawable/green_dot_online"
+         android:visibility="gone"
+         />
+
+   </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

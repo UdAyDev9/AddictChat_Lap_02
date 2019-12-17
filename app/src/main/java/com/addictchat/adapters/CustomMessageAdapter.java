@@ -1,6 +1,7 @@
 package com.addictchat.adapters;
 
 import android.content.Context;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.CardView;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -44,6 +46,9 @@ public class CustomMessageAdapter extends RecyclerView.Adapter<CustomMessageAdap
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         LinearLayout.LayoutParams layoutparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
+        Message messagess =messages.get(position);
+        String fromMessageType = messagess.getType();
+
         if (!messages.get(position).getFrom()) {
 
             holder.from_message.setText(messages.get(position).getMsg());
@@ -75,6 +80,7 @@ public class CustomMessageAdapter extends RecyclerView.Adapter<CustomMessageAdap
         public CardView from_cardView, to_cardView;
         public ConstraintLayout from_constraintLayout, to_constraintLayout;
         public TextView from_message, to_message,fromTime,toTime;
+        public ImageView msgSenderImg,msgRecieverImg;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -86,6 +92,8 @@ public class CustomMessageAdapter extends RecyclerView.Adapter<CustomMessageAdap
             to_message = itemView.findViewById(R.id.to_messagee);
             fromTime = itemView.findViewById(R.id.from_time);
             toTime = itemView.findViewById(R.id.to_time);
+            msgSenderImg = (ImageView)itemView.findViewById(R.id.from_image_view);
+            msgRecieverImg = (ImageView)itemView.findViewById(R.id.to_image_view);
         }
     }
 }

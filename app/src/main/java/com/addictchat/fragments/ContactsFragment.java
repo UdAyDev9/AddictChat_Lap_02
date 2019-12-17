@@ -1,120 +1,189 @@
 package com.addictchat.fragments;
 
-import android.support.v4.app.Fragment;
-
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.addictchat.R;
-import com.addictchat.adapters.ContactsAdapter;
+import com.addictchat.model.Users;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class ContactsFragment extends Fragment {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class ContactsFragment extends Fragment
+{
+    private View ContactsView;
+    private RecyclerView myContactsList;
 
-    private static final String[] PROJECTION = {
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.LOOKUP_KEY,
-            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY
-    };
+    private DatabaseReference ContacsRef, UsersRef;
+    private FirebaseAuth mAuth;
+    private String currentUserID;
+    SharedPreferences sp;
+    String myUserNo = "";
 
-    // TODO: Implement a more advanced example that makes use of this
-    private static final String SELECTION = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
-
-    // Defines a variable for the search string
-    private String mSearchString = "@hotmail.com";
-    // Defines the array to hold values that replace the ?
-    private String[] mSelectionArgs = { mSearchString };
-
-    private RecyclerView mContactListView;
+    public ContactsFragment() {
+        // Required empty public constructor
+    }
 
 
-    // Empty public constructor, required by the system
-    public ContactsFragment() {}
-
-    // A UI Fragment must inflate its View
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the fragment layout
-        View root = inflater.inflate(R.layout.contacts_list, container, false);
-        mContactListView = (RecyclerView) root.findViewById(R.id.rv_contact_list);
-        mContactListView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mContactListView.setItemAnimator(new DefaultItemAnimator());
-        requestContacts();
-        return root;
+        Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        ContactsView = inflater.inflate(R.layout.fragment_contacts, container, false);
+
+
+        myContactsList = (RecyclerView) ContactsView.findViewById(R.id.contacts_list);
+        myContactsList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUserID = mAuth.getCurrentUser().getUid();
+
+        sp = getContext().getSharedPreferences("user_phone_no", Activity.MODE_PRIVATE);
+        myUserNo = sp.getString("user_phone_no", "");
+        ContacsRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID);
+        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+
+
+        return ContactsView;
     }
 
-    // Request code for READ_CONTACTS. It can be any number > 0.
-    private static final int PERMISSIONS_REQUEST_READ_CONTACTS = 100;
-
-    private void requestContacts() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, PERMISSIONS_REQUEST_READ_CONTACTS);
-        } else {
-            showContacts();
-        }
-    }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST_READ_CONTACTS) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showContacts();
-            } else {
-                Log.e("Permissions", "Access denied");
+    public void onStart()
+    {
+        super.onStart();
+
+        FirebaseRecyclerOptions options =
+            new FirebaseRecyclerOptions.Builder<Users>()
+                .setQuery(ContacsRef, Users.class)
+                .build();
+
+
+        final FirebaseRecyclerAdapter<Users, ContactsViewHolder> adapter
+            = new FirebaseRecyclerAdapter<Users, ContactsViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull final ContactsViewHolder holder, int position,
+                @NonNull Users model) {
+                final String userIDs = getRef(position).getKey();
+
+                UsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot)
+                    {
+                        Log.i("sff", "onDataChange: yes");
+                        if (dataSnapshot.exists())
+                        {
+                            /*if (dataSnapshot.child("userState").hasChild("state"))
+                            {
+                                String state = dataSnapshot.child("userState").child("state").getValue().toString();
+                                String date = dataSnapshot.child("userState").child("date").getValue().toString();
+                                String time = dataSnapshot.child("userState").child("time").getValue().toString();
+
+                                if (state.equals("online"))
+                                {
+                                    holder.onlineIcon.setVisibility(View.VISIBLE);
+                                }
+                                else if (state.equals("offline"))
+                                {
+                                    holder.onlineIcon.setVisibility(View.INVISIBLE);
+                                }
+                            }
+                            else
+                            {
+                                holder.onlineIcon.setVisibility(View.INVISIBLE);
+                            }
+*/
+
+                            if (dataSnapshot.hasChild("user_image"))
+                            {
+                                String userImage = dataSnapshot.child("user_image").getValue().toString();
+                                String profileName = dataSnapshot.child("user_name").getValue().toString();
+                                String profileStatus = dataSnapshot.child("user_status").getValue().toString();
+
+                                Log.d("fg", "onDataChange: "+profileName);
+                                holder.userName.setText(profileName);
+                                holder.userStatus.setText(profileStatus);
+                                Picasso.with(getContext()).load(userImage).placeholder(R.drawable.avtar_img).into(holder.profileImage);
+                            }
+                            else
+                            {
+                                String profileName = dataSnapshot.child("user_name").getValue().toString();
+                                String profileStatus = dataSnapshot.child("user_status").getValue().toString();
+                                Log.d("fg2", "onDataChange: "+profileName);
+
+                                holder.userName.setText(profileName);
+                                holder.userStatus.setText(profileStatus);
+                            }
+                        }
+                        Log.i("sf22f", "onDataChange: yes");
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
-        }
+
+
+
+            @NonNull
+            @Override
+            public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
+            {
+                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.users_single_row, viewGroup, false);
+                ContactsViewHolder viewHolder = new ContactsViewHolder(view);
+                return viewHolder;
+            }
+        };
+
+        myContactsList.setAdapter(adapter);
+        adapter.startListening();
     }
 
-    private void showContacts(){
 
-        // Initializes a loader for loading the contacts
-        getLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
-            @Override
-            public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-                /*
-                 * Makes search string into pattern and
-                 * stores it in the selection array
-                 */
-                Uri contentUri = Uri.withAppendedPath(
-                        ContactsContract.Contacts.CONTENT_FILTER_URI,
-                        Uri.encode(mSearchString));
-                // Starts the query
-                return new CursorLoader(
-                        getActivity(),
-                        contentUri,
-                        PROJECTION,
-                        null,
-                        null,
-                        null);
-            }
 
-            @Override
-            public void onLoadFinished(Loader<Cursor> objectLoader, Cursor c) {
-                // Put the result Cursor in the adapter for the ListView
-                //mContactListView.setAdapter(new ContactsAdapter(c));
-            }
 
-            @Override
-            public void onLoaderReset(Loader<Cursor> cursorLoader) {
-                // TODO do I need to do anything here?
-            }
-        });
+    public static class ContactsViewHolder extends RecyclerView.ViewHolder
+    {
+        TextView userName, userStatus;
+        CircleImageView profileImage;
+        ImageView onlineIcon;
+
+
+        public ContactsViewHolder(@NonNull View itemView)
+        {
+            super(itemView);
+
+            userName = itemView.findViewById(R.id.user_single_display_name);
+            userStatus = itemView.findViewById(R.id.user_single_status);
+            profileImage = itemView.findViewById(R.id.circleImageView);
+           // onlineIcon = (ImageView) itemView.findViewById(R.id.user_online_status);
+        }
     }
 }
