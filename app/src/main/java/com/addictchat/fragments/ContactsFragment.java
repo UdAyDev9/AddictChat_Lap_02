@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.addictchat.R;
 import com.addictchat.model.Users;
+import com.addictchat.widgets.RoundedImageView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -97,7 +98,7 @@ public class ContactsFragment extends Fragment
                         Log.i("sff", "onDataChange: yes");
                         if (dataSnapshot.exists())
                         {
-                            /*if (dataSnapshot.child("userState").hasChild("state"))
+                            if (dataSnapshot.child("userState").hasChild("state"))
                             {
                                 String state = dataSnapshot.child("userState").child("state").getValue().toString();
                                 String date = dataSnapshot.child("userState").child("date").getValue().toString();
@@ -116,7 +117,7 @@ public class ContactsFragment extends Fragment
                             {
                                 holder.onlineIcon.setVisibility(View.INVISIBLE);
                             }
-*/
+
 
                             if (dataSnapshot.hasChild("user_image"))
                             {
@@ -156,7 +157,7 @@ public class ContactsFragment extends Fragment
             @Override
             public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i)
             {
-                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.users_single_row, viewGroup, false);
+                View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.user_display_layout, viewGroup, false);
                 ContactsViewHolder viewHolder = new ContactsViewHolder(view);
                 return viewHolder;
             }
@@ -172,7 +173,7 @@ public class ContactsFragment extends Fragment
     public static class ContactsViewHolder extends RecyclerView.ViewHolder
     {
         TextView userName, userStatus;
-        CircleImageView profileImage;
+        RoundedImageView profileImage;
         ImageView onlineIcon;
 
 
@@ -180,10 +181,10 @@ public class ContactsFragment extends Fragment
         {
             super(itemView);
 
-            userName = itemView.findViewById(R.id.user_single_display_name);
-            userStatus = itemView.findViewById(R.id.user_single_status);
-            profileImage = itemView.findViewById(R.id.circleImageView);
-           // onlineIcon = (ImageView) itemView.findViewById(R.id.user_online_status);
+            userName = itemView.findViewById(R.id.tvName);
+            userStatus = itemView.findViewById(R.id.tvStatus);
+            profileImage = itemView.findViewById(R.id.rounded_iv_profile);
+            onlineIcon = (ImageView) itemView.findViewById(R.id.online_green_iv);
         }
     }
 }

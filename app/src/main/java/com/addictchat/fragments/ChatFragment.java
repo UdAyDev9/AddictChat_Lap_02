@@ -73,6 +73,7 @@ public class ChatFragment extends Fragment {
         ChatsRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserId);
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         ChatsRef.keepSynced(true);
+        UsersRef.keepSynced(true);
 
         recyclerView = (RecyclerView) PrivateChatsView.findViewById(R.id.chats_list);
         recyclerView.setHasFixedSize(true);
@@ -111,7 +112,7 @@ public class ChatFragment extends Fragment {
                                 if (dataSnapshot.hasChild("user_image"))
                                 {
                                     retImage[0] = dataSnapshot.child("user_image").getValue().toString();
-                                    Picasso.with(getContext()).load(retImage[0]).into(holder.profileImage);
+                                    Picasso.with(getContext()).load(retImage[0]).placeholder(R.drawable.avtar_img).into(holder.profileImage);
                                 }
 
                                 final String retName = dataSnapshot.child("user_name").getValue().toString();
@@ -129,7 +130,8 @@ public class ChatFragment extends Fragment {
 
                                     if (state.equals("online"))
                                     {
-                                        holder.userStatus.setText("online");
+                                      //  holder.userStatus.setText("online");
+                                        holder.greenDotView.setVisibility(View.VISIBLE);
                                     }
                                     else if (state.equals("offline"))
                                     {

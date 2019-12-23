@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import com.addictchat.R;
 import com.addictchat.adapters.ViewPagerAdapter;
 import com.addictchat.fragments.CallsFragment;
@@ -26,6 +27,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class DashboardActivity extends AppCompatActivity {
@@ -50,13 +53,20 @@ public class DashboardActivity extends AppCompatActivity {
   private DatabaseReference databaseReference,databaseReference2;
   private  FirebaseAuth mAuth;
   private FloatingActionButton fab;
-
+  private DatabaseReference RootRef;
+  private String currentUserID;
+  private FirebaseUser currentUser;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_dashboard);
     firebaseUser =FirebaseAuth.getInstance().getCurrentUser();
+    mAuth = FirebaseAuth.getInstance();
+    currentUser = mAuth.getCurrentUser();
+    currentUserID = mAuth.getCurrentUser().getUid();
+    RootRef = FirebaseDatabase.getInstance().getReference();
+
        /* Button btnLogout = (Button) findViewById(R.id.buttonLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -240,12 +250,20 @@ public class DashboardActivity extends AppCompatActivity {
   @Override
   protected void onStop() {
     super.onStop();
+    if (currentUser != null)
+    {
+      updateUserStatus("offline");
+    }
     databaseReference.child("user_online_status").setValue("no");
   }
 
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    if (currentUser != null)
+    {
+      updateUserStatus("offline");
+    }
     databaseReference.child("user_online_status").setValue("no");
   }
 
@@ -271,4 +289,72 @@ public class DashboardActivity extends AppCompatActivity {
     hashMap.put("user_online_status",status);
     databaseReference2.updateChildren(hashMap);
   }
+
+  private void updateUserStatus(String state)
+  {
+    String saveCurrentTime, saveCurrentDate;
+
+    Calendar calendar = Calendar.getInstance();
+
+    SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
+    saveCurrentDate = currentDate.format(calendar.getTime());
+
+    SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
+    saveCurrentTime = currentTime.format(calendar.getTime());
+
+    HashMap<String, Object> onlineStateMap = new HashMap<>();
+    onlineStateMap.put("time", saveCurrentTime);
+    onlineStateMap.put("date", saveCurrentDate);
+    onlineStateMap.put("state", state);
+
+    RootRef.child("Users").child(currentUserID).child("userState")
+        .updateChildren(onlineStateMap);
+
+  }
+
+  private void VerifyUserExistance()
+  {
+    String currentUserID = mAuth.getCurrentUser().getUid();
+
+    RootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot)
+      {
+        if ((dataSnapshot.child("user_name").exists()))
+        {
+          //Toast.makeText(DashboardActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+          //SendUserToSettingsActivity();
+        }
+      }
+
+      @Override
+      public void onCancelled(DatabaseError databaseError) {
+
+      }
+    });
+  }
+
+  @Override
+  protected void onStart()
+  {
+    super.onStart();
+
+    if (currentUser == null)
+    {
+      //SendUserToLoginActivity();
+    }
+    else
+    {
+      updateUserStatus("online");
+
+      VerifyUserExistance();
+    }
+  }
+
+
+
+
 }

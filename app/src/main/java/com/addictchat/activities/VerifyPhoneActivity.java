@@ -22,9 +22,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.concurrent.TimeUnit;
 
 public class VerifyPhoneActivity extends AppCompatActivity {
@@ -39,11 +43,14 @@ public class VerifyPhoneActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
 
     private String phonenumber;
+    private DatabaseReference RootRef;
+    private boolean haveUser = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_phone);
+        RootRef = FirebaseDatabase.getInstance().getReference();
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -78,31 +85,97 @@ public class VerifyPhoneActivity extends AppCompatActivity {
         signInWithCredential(credential);
     }
 
+
+
     private void signInWithCredential(PhoneAuthCredential credential) {
         mAuth.signInWithCredential(credential)
             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()) {
-                        String currentUserId = mAuth.getCurrentUser().getUid();
-                        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserId);
-                        //databaseReference.child("Users").child(currentUserId);
-                        databaseReference.child("user_name").setValue(phonenumber);
-                        databaseReference.child("user_phone").setValue(phonenumber);
-                        databaseReference.child("user_status").setValue("Hey there, I am using Addict Chat App");
-                        databaseReference.child("user_image").setValue("default_image");
-                        databaseReference.child("user_thumb_image").setValue("default_image");
-                        databaseReference.child("user_online_status").setValue("no");
-
+                       /* String currentUserId = mAuth.getCurrentUser().getUid();
+                        String deviveTokenId = FirebaseInstanceId.getInstance().getToken();
                         SharedPreferences sp = getSharedPreferences("user_phone_no", Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sp.edit();
                         editor.putString("user_phone_no", phonenumber);
                         editor.putString("user_id", currentUserId);
-                        editor.commit();
+                        editor.commit();*/
+                      /*
+                       // verifyUserExistance(mAuth.getCurrentUser().getUid());
+                        RootRef.child("Users").child(currentUserId).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot)
+                            {
+                                if ((dataSnapshot.child("user_name").exists()))
+                                {
+                                    haveUser = true;
+                                    Toast.makeText(VerifyPhoneActivity.this, "Exists...", Toast.LENGTH_SHORT).show();
+                                }
+                                else
+                                {
+                                    //SendUserToSettingsActivity();
+                                    haveUser = false;
 
-                        Intent intent = new Intent(VerifyPhoneActivity.this, DashboardActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+
+                        });
+
+*/
+                        String currentUserId = mAuth.getCurrentUser().getUid();
+                        String deviveTokenId = FirebaseInstanceId.getInstance().getToken();
+                      SharedPreferences sp = getSharedPreferences("user_phone_no", Activity.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putString("user_phone_no", phonenumber);
+                        editor.putString("user_id", currentUserId);
+                        editor.commit();
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                        ref.child("Users").child(mAuth.getCurrentUser().getUid()).child("user_name").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()){
+                                    // use "username" already exists
+                                    // Let the user know he needs to pick another username.
+                                    Intent intent = new Intent(VerifyPhoneActivity.this, DashboardActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                } else {
+                                    // User does not exist. NOW call createUserWithEmailAndPassword
+                                    // Your previous code here.
+                                    String currentUserId = mAuth.getCurrentUser().getUid();
+                                    String deviveTokenId = FirebaseInstanceId.getInstance().getToken();
+                                    databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserId);
+                                    //databaseReference.child("Users").child(currentUserId);
+                                    databaseReference.child("user_name").setValue(phonenumber);
+                                    databaseReference.child("user_phone").setValue(phonenumber);
+                                    databaseReference.child("user_status").setValue("Hey there, I am using Addict Chat App");
+                                    databaseReference.child("user_image").setValue("default_image");
+                                    databaseReference.child("user_thumb_image").setValue("default_image");
+                                    databaseReference.child("user_online_status").setValue("no");
+                                    databaseReference.child("user_id").setValue(currentUserId);
+                                    databaseReference.child("device_token_id").setValue(deviveTokenId);
+
+
+
+                                    Intent intent = new Intent(VerifyPhoneActivity.this, DashboardActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+
                     } else {
                         Toast.makeText(VerifyPhoneActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
@@ -142,5 +215,31 @@ public class VerifyPhoneActivity extends AppCompatActivity {
             Toast.makeText(VerifyPhoneActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     };
+    private void verifyUserExistance(String currentUserID)
+    {
+      //  String currentUserID = mAuth.getCurrentUser().getUid();
 
+        RootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                if ((dataSnapshot.child("user_name").exists()))
+                {
+                    haveUser = true;
+                    Toast.makeText(VerifyPhoneActivity.this, "Exists", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    //SendUserToSettingsActivity();
+                    haveUser = false;
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 }

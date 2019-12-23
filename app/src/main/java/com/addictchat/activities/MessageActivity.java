@@ -165,7 +165,7 @@ public class MessageActivity extends AppCompatActivity {
   private ImageButton SendMessageButton, SendFilesButton;
   private EditText MessageInputText;
 
-  private final List<Messages> messagesList = new ArrayList<>();
+  private  ArrayList<Messages> messagesList = new ArrayList<>();
   private LinearLayoutManager linearLayoutManager;
   private MessageAdapter messageAdapter;
   private RecyclerView userMessagesList;
@@ -210,7 +210,9 @@ public class MessageActivity extends AppCompatActivity {
     mAuth = FirebaseAuth.getInstance();
     myUserId = mAuth.getCurrentUser().getUid();
     UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
+    UserRef.keepSynced(true);
     ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
+    ContactsRef.keepSynced(true);
     //NotificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
     receiverUserID = myUserId;
     senderUserID = userID;
@@ -252,9 +254,10 @@ public class MessageActivity extends AppCompatActivity {
     relativeLayout= (RelativeLayout)findViewById(R.id.relativeLayout);
 
     baseUserDatabaseRef = FirebaseDatabase.getInstance().getReference().child("Users");
+    baseUserDatabaseRef.keepSynced(true);
     progressDialog_sendImage =new ProgressDialog(this);
 
-
+    displayLastSeen();
 
       if(User_online_status.equals("yes")){
 
@@ -276,19 +279,27 @@ public class MessageActivity extends AppCompatActivity {
 
         // TODO Auto-generated method stub
 
-        tvOnlineStatus.setText("typing...");
+        //tvOnlineStatus.setText("typing...");
+
+        UserRef.child(messageSenderID).child("userState").child("state").setValue("typing");
+
+
       }
 
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
         // TODO Auto-generated method stub
+        UserRef.child(messageSenderID).child("userState").child("state").setValue("online");
+
       }
 
       @Override
       public void afterTextChanged(Editable s) {
 
         // TODO Auto-generated method stub
+       // UserRef.child(messageSenderID).child("userState").child("state").setValue("online");
+
       }
     });
 
@@ -304,8 +315,6 @@ public class MessageActivity extends AppCompatActivity {
           String user = users.getUser_phone_number();
           Log.i("ddf",parent);
          // Log.i("fddf",user);
-
-
 
 
         }
@@ -650,19 +659,19 @@ public class MessageActivity extends AppCompatActivity {
               Toast.LENGTH_SHORT).show();
         }
         text_send.setText("");*/
+
         SendMessagee();
 
       }
     });
 
 
-
-    messageAdapter = new MessageAdapter(messagesList);
     userMessagesList = (RecyclerView) findViewById(R.id.recyclerView);
     linearLayoutManager = new LinearLayoutManager(this);
     userMessagesList.setLayoutManager(linearLayoutManager);
+    messageAdapter = new MessageAdapter(messagesList);
     userMessagesList.setAdapter(messageAdapter);
-
+    messageAdapter.notifyDataSetChanged();
     Calendar calendar = Calendar.getInstance();
 
     SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
@@ -1209,6 +1218,8 @@ public class MessageActivity extends AppCompatActivity {
         {
           if (task.isSuccessful())
           {
+            UserRef.child(messageSenderID).child("userState").child("state").setValue("online");
+
             Toast.makeText(MessageActivity.this, "Message Sent Successfully...", Toast.LENGTH_SHORT).show();
           }
           else
@@ -1234,9 +1245,11 @@ public class MessageActivity extends AppCompatActivity {
 
             messagesList.add(messages);
 
-            messageAdapter.notifyDataSetChanged();
 
             userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+
+            messageAdapter.notifyDataSetChanged();
+
           }
 
           @Override
@@ -1252,6 +1265,45 @@ public class MessageActivity extends AppCompatActivity {
           @Override
           public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
+          }
+
+          @Override
+          public void onCancelled(DatabaseError databaseError) {
+
+          }
+        });
+  }
+
+  private void displayLastSeen()
+  {
+    RootRef.child("Users").child(messageReceiverID)
+        .addValueEventListener(new ValueEventListener() {
+          @Override
+          public void onDataChange(DataSnapshot dataSnapshot)
+          {
+            if (dataSnapshot.child("userState").hasChild("state"))
+            {
+              String state = dataSnapshot.child("userState").child("state").getValue().toString();
+              String date  = dataSnapshot.child("userState").child("date").getValue().toString();
+              String time = dataSnapshot.child("userState").child("time").getValue().toString();
+
+              if (state.equals("online"))
+              {
+                tvOnlineStatus.setText("online");
+              }
+              else if (state.equals("offline"))
+              {
+                tvOnlineStatus.setText("Last Seen: " + date + " " + time);
+              }else if (state.equals("typing")){
+
+                tvOnlineStatus.setText("typing...");
+
+              }
+            }
+            else
+            {
+              tvOnlineStatus.setText("offline");
+            }
           }
 
           @Override

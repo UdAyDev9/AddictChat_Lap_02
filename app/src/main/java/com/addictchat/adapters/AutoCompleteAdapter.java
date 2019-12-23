@@ -21,6 +21,8 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,6 +44,8 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
     RadioButton previous_Selected=null;
     String uname, login_unamne,req_type,req_status,uimg,uid,login_uid;
     AutoCompleteTextView autoCompleteTextView;
+    private DatabaseReference UserRef, ChatRequestRef, ContactsRef, NotificationRef;
+
 
     final private String FCM_API = "https://fcm.googleapis.com/fcm/send";
     final private String serverKey = "key=" + "AAAADcU8SE8:APA91bFtZ1M-S-t1nRH_t1cAyj2IYPctSwJrctZskHxo49SDC5YmHXUpGtn-NpsWAOkhZqS3ZDS3izQZAfQcfRdsOeDBOOUrxT3u2z2hC_Xqynth2uNvA8iVqjuQjoKGNUO01reZ1Unb";
@@ -51,6 +55,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
     String NOTIFICATION_TITLE = "Request Type";
     String NOTIFICATION_MESSAGE = "Request";
     String TOPIC;
+    private String Current_State = "";
 
     public AutoCompleteAdapter(MessageActivity messageActivity, String[] reuests, String userName, String login_unanme, String req_type, String req_status, AutoCompleteTextView autoCompleteTextView,String uimg,String uid,String login_uid) {
         request_types.addAll(Arrays.asList(reuests));
@@ -113,7 +118,9 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
                     // radioButton.setText("Waiting!!");
 
 
-                    TOPIC = "/topics/userABC"; //topic must match with what the receiver subscribed to
+                   // TOPIC = "/topics/userABC"; //topic must match with what the receiver subscribed to
+                    //TOPIC = "fu8cHpoY_dE:APA91bHix3HesQIm2OhtJAyQ7Lmk9Wn62csywXJcTFZSkMM871RN7gA3ZNcjqKuIdKMv7wAZ6-0U20IEsVUMbL0RMA5hcwPjsi9kBEy3DWTb1RVcN6uawUfDI2rHbbhVnz9ju0VrJvam"; //topic must match with what the receiver subscribed to
+                      TOPIC = "fu8cHpoY_dE:APA91bHix3HesQIm2OhtJAyQ7Lmk9Wn62csywXJcTFZSkMM871RN7gA3ZNcjqKuIdKMv7wAZ6-0U20IEsVUMbL0RMA5hcwPjsi9kBEy3DWTb1RVcN6uawUfDI2rHbbhVnz9ju0VrJvam"; //topic must match with what the receiver subscribed to
 
 
                     JSONObject notification = new JSONObject();
@@ -127,7 +134,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
                     } catch (JSONException e) {
                         Log.e(TAG, "onCreate: " + e.getMessage() );
                     }
-                    //sendNotification(notification);
+                    sendNotification(notification);
 
 
 
@@ -152,6 +159,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
                 databaseReference2.child("req_status").setValue("pending");
                 databaseReference2.child("uimg").setValue(uimg);
                 databaseReference2.child("userId").setValue(uid);
+                notifBody();
 
             }
         });
@@ -178,7 +186,10 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("Authorization", serverKey);
+                //params.put("Authorization", "Bearer " + "cxBtZHNZPtk:APA91bFdI8PCXCZ61880A9eFoQe-VQB0J6yCsygw4ipVTv7xhAEijM5oCSp2AsIo-X5tGAZUt3gzbbtWfo1dHuLK5mYEqCZ8UlXHnRNh8JqJk81dszTObltaW67MHVwVaEW3ek-1knDZ");
                 params.put("Content-Type", contentType);
+                //params.put("to","cxBtZHNZPtk:APA91bFdI8PCXCZ61880A9eFoQe-VQB0J6yCsygw4ipVTv7xhAEijM5oCSp2AsIo-X5tGAZUt3gzbbtWfo1dHuLK5mYEqCZ8UlXHnRNh8JqJk81dszTObltaW67MHVwVaEW3ek-1knDZ");
+
                 return params;
             }
         };
@@ -201,5 +212,28 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
 
             }
         };
+    }
+
+    private void notifBody(){
+
+        NotificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
+        HashMap<String, String> chatNotificationMap = new HashMap<>();
+        chatNotificationMap.put("from", login_uid);
+        chatNotificationMap.put("type", "request");
+
+        NotificationRef.child(uid).push()
+            .setValue(chatNotificationMap)
+            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task)
+                {
+                    if (task.isSuccessful())
+                    {
+                        //SendMessageRequestButton.setEnabled(true);
+                        Current_State = "request_sent";
+                        //SendMessageRequestButton.setText("Cancel Chat Request");
+                    }
+                }
+            });
     }
 }

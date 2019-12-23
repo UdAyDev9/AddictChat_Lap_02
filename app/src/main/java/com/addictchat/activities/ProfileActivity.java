@@ -571,7 +571,7 @@ public class ProfileActivity extends AppCompatActivity implements OnClickListene
 
 
           //progressDialog.dismiss();
-          Toast.makeText(ProfileActivity.this, "Welcome " + "", Toast.LENGTH_LONG).show();
+         // Toast.makeText(ProfileActivity.this, "Welcome " + "", Toast.LENGTH_LONG).show();
 
         }
       }
