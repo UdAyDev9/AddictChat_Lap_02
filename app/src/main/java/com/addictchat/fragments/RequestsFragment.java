@@ -152,7 +152,13 @@ public class RequestsFragment extends Fragment {
           @NonNull final Requests model) {
 
         holder.userName.setText(model.getUname());
-        holder.userStatus.setText(model.getReq_type().concat("             ").concat(model.getTime()));
+        if (model.getTime().isEmpty()){
+          Log.d("fgfgg", "onBindViewHolder: ");
+
+        }else {
+          holder.userStatus.setText(model.getReq_type().concat("             ").concat(model.getTime()));
+
+        }
 
       /*  Picasso.with(getContext()).load(model.getUser_image()).networkPolicy(NetworkPolicy.OFFLINE)
             .placeholder(R.drawable.avtar_img).into(holder.userImage);*/

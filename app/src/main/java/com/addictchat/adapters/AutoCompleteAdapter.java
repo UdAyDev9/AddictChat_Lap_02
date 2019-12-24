@@ -119,8 +119,7 @@ public class AutoCompleteAdapter extends BaseAdapter implements Filterable{
 
 
                    // TOPIC = "/topics/userABC"; //topic must match with what the receiver subscribed to
-                    //TOPIC = "fu8cHpoY_dE:APA91bHix3HesQIm2OhtJAyQ7Lmk9Wn62csywXJcTFZSkMM871RN7gA3ZNcjqKuIdKMv7wAZ6-0U20IEsVUMbL0RMA5hcwPjsi9kBEy3DWTb1RVcN6uawUfDI2rHbbhVnz9ju0VrJvam"; //topic must match with what the receiver subscribed to
-                      TOPIC = "fu8cHpoY_dE:APA91bHix3HesQIm2OhtJAyQ7Lmk9Wn62csywXJcTFZSkMM871RN7gA3ZNcjqKuIdKMv7wAZ6-0U20IEsVUMbL0RMA5hcwPjsi9kBEy3DWTb1RVcN6uawUfDI2rHbbhVnz9ju0VrJvam"; //topic must match with what the receiver subscribed to
+                    TOPIC = "fu8cHpoY_dE:APA91bHix3HesQIm2OhtJAyQ7Lmk9Wn62csywXJcTFZSkMM871RN7gA3ZNcjqKuIdKMv7wAZ6-0U20IEsVUMbL0RMA5hcwPjsi9kBEy3DWTb1RVcN6uawUfDI2rHbbhVnz9ju0VrJvam"; //topic must match with what the receiver subscribed to
 
 
                     JSONObject notification = new JSONObject();

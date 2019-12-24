@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,6 +57,7 @@ public class DashboardActivity extends AppCompatActivity {
   private DatabaseReference RootRef;
   private String currentUserID;
   private FirebaseUser currentUser;
+  private  final String TAG = "life_cycle";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,8 @@ public class DashboardActivity extends AppCompatActivity {
     currentUser = mAuth.getCurrentUser();
     currentUserID = mAuth.getCurrentUser().getUid();
     RootRef = FirebaseDatabase.getInstance().getReference();
-
+    updateUserStatus("online");
+    Log.d(TAG, "onCreate: called");
        /* Button btnLogout = (Button) findViewById(R.id.buttonLogout);
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +100,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     mAuth = FirebaseAuth.getInstance();
     databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(mAuth.getCurrentUser().getUid());
-    databaseReference.child("user_online_status").setValue("yes");
+    //databaseReference.child("user_online_status").setValue("yes");
     fab = (FloatingActionButton) findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -241,8 +244,10 @@ public class DashboardActivity extends AppCompatActivity {
   @Override
   protected void onPause() {
     super.onPause();
-    databaseReference.child("user_online_status").setValue("yes");
+    //databaseReference.child("user_online_status").setValue("yes");
     //    status("offline.");
+    updateUserStatus("offline");
+    Log.d(TAG, "onPause: "+ "called");
 
 
   }
@@ -253,6 +258,7 @@ public class DashboardActivity extends AppCompatActivity {
     if (currentUser != null)
     {
       updateUserStatus("offline");
+      Log.d(TAG, "onStop: called");
     }
     databaseReference.child("user_online_status").setValue("no");
   }
@@ -263,24 +269,30 @@ public class DashboardActivity extends AppCompatActivity {
     if (currentUser != null)
     {
       updateUserStatus("offline");
+      Log.d(TAG, "onDestroy: called");
     }
-    databaseReference.child("user_online_status").setValue("no");
+    //databaseReference.child("user_online_status").setValue("no");
   }
 
 
   @Override
   protected void onRestart() {
     super.onRestart();
-    databaseReference.child("user_online_status").setValue("yes");
+    //databaseReference.child("user_online_status").setValue("yes");
+    updateUserStatus("online");
+    Log.d(TAG, "onRestart: called");
 
   }
+
 
 
   @Override
   protected void onResume() {
     super.onResume();
-    databaseReference.child("user_online_status").setValue("yes");
+    //databaseReference.child("user_online_status").setValue("yes");
     // status("online.");
+    updateUserStatus("online");
+    Log.d(TAG, "onResume: called");
   }
 
   private void status(String status){
@@ -344,6 +356,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     if (currentUser == null)
     {
+      Log.d(TAG, "onStart: called");
       //SendUserToLoginActivity();
     }
     else
@@ -353,8 +366,4 @@ public class DashboardActivity extends AppCompatActivity {
       VerifyUserExistance();
     }
   }
-
-
-
-
 }

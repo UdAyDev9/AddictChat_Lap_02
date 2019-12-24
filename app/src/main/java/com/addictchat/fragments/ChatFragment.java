@@ -54,7 +54,7 @@ public class ChatFragment extends Fragment {
 
     private DatabaseReference ChatsRef, UsersRef;
     private View PrivateChatsView;
-
+    private String userState = "";
 
 
 
@@ -132,9 +132,14 @@ public class ChatFragment extends Fragment {
                                     {
                                       //  holder.userStatus.setText("online");
                                         holder.greenDotView.setVisibility(View.VISIBLE);
+                                        userState = state;
+                                        Log.d("state", "onClick: state is"+userState);
+
                                     }
                                     else if (state.equals("offline"))
                                     {
+                                        holder.greenDotView.setVisibility(View.INVISIBLE);
+
                                         holder.userStatus.setText("Last Seen: " + date + " " + time);
                                     }
                                 }
@@ -151,6 +156,8 @@ public class ChatFragment extends Fragment {
                                         chatIntent.putExtra("user_ID", usersIDs);
                                         chatIntent.putExtra("userName", retName);
                                         chatIntent.putExtra("userImage", retImage[0]);
+                                        chatIntent.putExtra("userState", userState);
+                                        Log.d("state", "onClick: "+userState);
                                         startActivity(chatIntent);
                                     }
                                 });

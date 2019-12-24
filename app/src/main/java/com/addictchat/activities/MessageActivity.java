@@ -165,7 +165,7 @@ public class MessageActivity extends AppCompatActivity {
   private ImageButton SendMessageButton, SendFilesButton;
   private EditText MessageInputText;
 
-  private  ArrayList<Messages> messagesList = new ArrayList<>();
+  private final List<Messages> messagesList = new ArrayList<>();
   private LinearLayoutManager linearLayoutManager;
   private MessageAdapter messageAdapter;
   private RecyclerView userMessagesList;
@@ -176,6 +176,7 @@ public class MessageActivity extends AppCompatActivity {
   private  Uri fileUri;
   private ProgressDialog progressDialog_sendImage;
 
+  private String userStateCheck = "";
 
 
   @Override
@@ -191,7 +192,9 @@ public class MessageActivity extends AppCompatActivity {
     unamne = intent.getStringExtra("userName");
     uimageUrl = intent.getStringExtra("userImage");
     userID = intent.getStringExtra("user_ID");
-    User_online_status = "no";
+    userStateCheck = intent.getStringExtra("userState");
+
+  //  User_online_status = "no";
     RootRef = FirebaseDatabase.getInstance().getReference();
 
 
@@ -220,7 +223,6 @@ public class MessageActivity extends AppCompatActivity {
     mAuth = FirebaseAuth.getInstance();
     messageSenderID = mAuth.getCurrentUser().getUid();
     messageReceiverID = userID;
-
     Toolbar toolbar = findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setTitle("");
@@ -256,10 +258,12 @@ public class MessageActivity extends AppCompatActivity {
     baseUserDatabaseRef = FirebaseDatabase.getInstance().getReference().child("Users");
     baseUserDatabaseRef.keepSynced(true);
     progressDialog_sendImage =new ProgressDialog(this);
-
+    updateUserStatus("online");
     displayLastSeen();
+    RootRef.child("Users").child(messageSenderID).child("userState").child("state").setValue(userStateCheck);
+    Log.d("state", "onClick: is "+userStateCheck);
 
-      if(User_online_status.equals("yes")){
+      /*if(User_online_status.equals("yes")){
 
         tvOnlineStatus.setVisibility(View.VISIBLE);
 
@@ -271,7 +275,7 @@ public class MessageActivity extends AppCompatActivity {
         tvOnlineStatus.setText("offline");
         tvOnlineStatus.setVisibility(View.VISIBLE);
 
-      }
+      }*/
 
     MessageInputText.addTextChangedListener(new TextWatcher() {
       @Override
@@ -281,7 +285,7 @@ public class MessageActivity extends AppCompatActivity {
 
         //tvOnlineStatus.setText("typing...");
 
-        UserRef.child(messageSenderID).child("userState").child("state").setValue("typing");
+       // UserRef.child(messageSenderID).child("userState").child("state").setValue("typing");
 
 
       }
@@ -290,7 +294,7 @@ public class MessageActivity extends AppCompatActivity {
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
         // TODO Auto-generated method stub
-        UserRef.child(messageSenderID).child("userState").child("state").setValue("online");
+       // UserRef.child(messageSenderID).child("userState").child("state").setValue("online");
 
       }
 
@@ -661,17 +665,19 @@ public class MessageActivity extends AppCompatActivity {
         text_send.setText("");*/
 
         SendMessagee();
+        MessageInputText.setText("");
 
       }
     });
 
 
+
+    messageAdapter = new MessageAdapter(messagesList);
     userMessagesList = (RecyclerView) findViewById(R.id.recyclerView);
     linearLayoutManager = new LinearLayoutManager(this);
     userMessagesList.setLayoutManager(linearLayoutManager);
-    messageAdapter = new MessageAdapter(messagesList);
     userMessagesList.setAdapter(messageAdapter);
-    messageAdapter.notifyDataSetChanged();
+
     Calendar calendar = Calendar.getInstance();
 
     SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
@@ -680,6 +686,9 @@ public class MessageActivity extends AppCompatActivity {
     SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
     saveCurrentTime = currentTime.format(calendar.getTime());
 
+    updateUserStatus("online");
+
+    loadMessages();
 
   }
 
@@ -687,6 +696,7 @@ public class MessageActivity extends AppCompatActivity {
       /*  if (req_type.equals("Friends")) {
             main.setBackground(getResources().getDrawable(R.drawable.friendship));
         } else if (req_type.equals("Love")) {
+            main.setBackground(getResources().getDrawable(R.drawable.love_bg));
             main.setBackground(getResources().getDrawable(R.drawable.love_bg));
         } else if (req_type.equals("Family")) {
             main.setBackground(getResources().getDrawable(R.drawable.family));
@@ -1212,7 +1222,21 @@ public class MessageActivity extends AppCompatActivity {
       messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageTextBody);
       messageBodyDetails.put( messageReceiverRef + "/" + messagePushID, messageTextBody);
 
-      RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
+      RootRef.updateChildren(messageBodyDetails, new DatabaseReference.CompletionListener() {
+        @Override
+        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+          if (databaseError != null)
+          {
+
+            Log.d("Message",databaseError.getMessage().toString());
+            //UserRef.child(messageSenderID).child("userState").child("state").setValue("online");
+            MessageInputText.setText("");
+
+           // Toast.makeText(MessageActivity.this, "Message Sent Successfully...", Toast.LENGTH_SHORT).show();
+          }
+        }
+      });
+      /*RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(new OnCompleteListener() {
         @Override
         public void onComplete(@NonNull Task task)
         {
@@ -1228,52 +1252,56 @@ public class MessageActivity extends AppCompatActivity {
           }
           MessageInputText.setText("");
         }
-      });
+      });*/
     }
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+    updateUserStatus("online");
+
   }
 
   @Override
   protected void onStart() {
     super.onStart();
+    updateUserStatus("online");
 
-    RootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
-        .addChildEventListener(new ChildEventListener() {
-          @Override
-          public void onChildAdded(DataSnapshot dataSnapshot, String s)
-          {
-            Messages messages = dataSnapshot.getValue(Messages.class);
-
-            messagesList.add(messages);
-
-
-            userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
-
-            messageAdapter.notifyDataSetChanged();
-
-          }
-
-          @Override
-          public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-          }
-
-          @Override
-          public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-          }
-
-          @Override
-          public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-          }
-
-          @Override
-          public void onCancelled(DatabaseError databaseError) {
-
-          }
-        });
+    //fetchMessages();
+  }
+  @Override
+  protected void onStop() {
+    super.onStop();
+    if (currentUser != null)
+    {
+      updateUserStatus("offline");
+    }
+//    databaseReference.child("user_online_status").setValue("no");
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+      updateUserStatus("offline");
+
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    updateUserStatus("offline");
+
+  }
+
+  @Override
+  protected void onRestart() {
+    super.onRestart();
+    //databaseReference.child("user_online_status").setValue("yes");
+    updateUserStatus("online");
+
+  }
   private void displayLastSeen()
   {
     RootRef.child("Users").child(messageReceiverID)
@@ -1302,7 +1330,7 @@ public class MessageActivity extends AppCompatActivity {
             }
             else
             {
-              tvOnlineStatus.setText("offline");
+              tvOnlineStatus.setText("offline..");
             }
           }
 
@@ -1311,6 +1339,66 @@ public class MessageActivity extends AppCompatActivity {
 
           }
         });
+  }
+
+  private void loadMessages(){
+
+    RootRef.child("Messages").child(messageSenderID).child(messageReceiverID)
+        .addChildEventListener(new ChildEventListener() {
+          @Override
+          public void onChildAdded(DataSnapshot dataSnapshot, String s)
+          {
+            Messages messages = dataSnapshot.getValue(Messages.class);
+
+            messagesList.add(messages);
+
+            messageAdapter.notifyDataSetChanged();
+
+            userMessagesList.smoothScrollToPosition(userMessagesList.getAdapter().getItemCount());
+          }
+
+          @Override
+          public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+          }
+
+          @Override
+          public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+          }
+
+          @Override
+          public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+          }
+
+          @Override
+          public void onCancelled(DatabaseError databaseError) {
+
+          }
+        });
+  }
+
+  private void updateUserStatus(String state)
+  {
+    String saveCurrentTime, saveCurrentDate;
+
+    Calendar calendar = Calendar.getInstance();
+
+    SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
+    saveCurrentDate = currentDate.format(calendar.getTime());
+
+    SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
+    saveCurrentTime = currentTime.format(calendar.getTime());
+
+    HashMap<String, Object> onlineStateMap = new HashMap<>();
+    onlineStateMap.put("time", saveCurrentTime);
+    onlineStateMap.put("date", saveCurrentDate);
+    onlineStateMap.put("state", state);
+
+    RootRef.child("Users").child(messageSenderID).child("userState")
+            .updateChildren(onlineStateMap);
+
   }
 }
 
